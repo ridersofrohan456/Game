@@ -1,28 +1,33 @@
 function love.load()
-	x = 100
-	y = 100
+	Object = require("main.classic")
+	require("main.player")
+	require("main.enemy")
 
-	fruits = { "apple", "pear", "banana" }
-	table.insert(fruits, "pineapple")
+	player = Player()
+	enemy = Enemy()
 end
 
 function love.update(dt)
-	if love.keyboard.isDown("right") then
-		x = x + 100 * dt
-	elseif love.keyboard.isDown("left") then
-		x = x - 100 * dt
-	elseif love.keyboard.isDown("up") then
-		y = y - 100 * dt
-	elseif love.keyboard.isDown("down") then
-		y = y + 100 * dt
-	end
+	player:update(dt)
+	enemy:update(dt)
 end
 
 function love.draw()
-	love.graphics.rectangle("line", x, y, 200, 150)
+	player:draw()
+	enemy:draw()
+end
 
-	love.graphics.print(fruits[1], 100, 100)
-	love.graphics.print(fruits[2], 100, 200)
-	love.graphics.print(fruits[3], 100, 300)
-	love.graphics.print(#fruits, 100, 400)
+function checkCollision(a, b)
+	local a_left = a.x
+	local a_right = a.x + a.width
+	local a_top = a.y
+	local a_bottom = a.y + a.height
+
+	local b_left = b.x
+	local b_right = b.x + b.width
+	local b_top = b.y
+	local b_bottom = b.y + b.height
+
+	-- check if any edges cross
+	return a_left < b_right and a_top < b_bottom and a_right > b_left and a_bottom > b_top
 end
