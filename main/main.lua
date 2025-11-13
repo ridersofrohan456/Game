@@ -2,32 +2,41 @@ function love.load()
 	Object = require("main.classic")
 	require("main.player")
 	require("main.enemy")
+	require("main.bullet")
 
 	player = Player()
 	enemy = Enemy()
+
+	listOfBullets = {}
 end
 
 function love.update(dt)
 	player:update(dt)
 	enemy:update(dt)
+
+	for i, v in ipairs(listOfBullets) do
+		v:update(dt)
+		if v:checkCollision(enemy) then
+			table.remove(listOfBullets, i)
+		end
+	end
+	if love.keyboard.isDown("space") then
+		createBullet(player.x, player.y)
+	end
 end
 
 function love.draw()
 	player:draw()
 	enemy:draw()
+
+	for i, v in ipairs(listOfBullets) do
+		v:draw()
+	end
 end
 
-function checkCollision(a, b)
-	local a_left = a.x
-	local a_right = a.x + a.width
-	local a_top = a.y
-	local a_bottom = a.y + a.height
-
-	local b_left = b.x
-	local b_right = b.x + b.width
-	local b_top = b.y
-	local b_bottom = b.y + b.height
-
-	-- check if any edges cross
-	return a_left < b_right and a_top < b_bottom and a_right > b_left and a_bottom > b_top
+function createBullet(x, y)
+	local bullet = Bullet()
+	bullet.x = x
+	bullet.y = y
+	table.insert(listOfBullets, bullet)
 end

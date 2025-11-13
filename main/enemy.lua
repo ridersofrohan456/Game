@@ -7,6 +7,7 @@ function Enemy:new()
 	self.y = 10
 	self.speed = 200
 	self.width = self.image:getWidth()
+	self.height = self.image:getHeight()
 
 	self.timer = 0
 	self.rand = 0
