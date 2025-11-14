@@ -1,42 +1,44 @@
 function love.load()
-	Object = require("main.classic")
-	require("main.player")
-	require("main.enemy")
-	require("main.bullet")
+	circle = {}
 
-	player = Player()
-	enemy = Enemy()
-
-	listOfBullets = {}
+	circle.x = 100
+	circle.y = 100
+	circle.radius = 25
+	circle.speed = 200
 end
 
 function love.update(dt)
-	player:update(dt)
-	enemy:update(dt)
+	mouse_x, mouse_y = love.mouse.getPosition()
 
-	for i, v in ipairs(listOfBullets) do
-		v:update(dt)
-		if v:checkCollision(enemy) then
-			table.remove(listOfBullets, i)
-		end
-	end
-	if love.keyboard.isDown("space") then
-		createBullet(player.x, player.y)
+	angle = math.atan2(mouse_y - circle.y, mouse_x - circle.x)
+
+	cos = math.cos(angle)
+	sin = math.sin(angle)
+
+	dist = distance(mouse_x, mouse_y, circle.x, circle.y)
+
+	if dist < 400 then
+		circle.x = circle.x + circle.speed * cos * (dist / 100) * dt
+		circle.y = circle.y + circle.speed * sin * (dist / 100) * dt
 	end
 end
 
 function love.draw()
-	player:draw()
-	enemy:draw()
+	love.graphics.circle("line", circle.x, circle.y, circle.radius)
 
-	for i, v in ipairs(listOfBullets) do
-		v:draw()
-	end
+	love.graphics.print("angle: " .. angle, 10, 10)
+	love.graphics.print("distance: " .. dist, 10, 20)
+
+	love.graphics.line(circle.x, circle.y, mouse_x, circle.y)
+	love.graphics.line(circle.x, circle.y, circle.x, mouse_y)
+
+	love.graphics.line(circle.x, circle.y, mouse_x, mouse_y)
 end
 
-function createBullet(x, y)
-	local bullet = Bullet()
-	bullet.x = x
-	bullet.y = y
-	table.insert(listOfBullets, bullet)
+function distance(x1, y1, x2, y2)
+	local horizontal_distance = x1 - x2
+	local vertical_distance = y1 - y2
+
+	local distance = math.sqrt(horizontal_distance ^ 2 + vertical_distance ^ 2)
+	return distance
 end
