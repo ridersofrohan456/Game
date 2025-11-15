@@ -1,40 +1,61 @@
 function love.load()
-	image = love.graphics.newImage("images/jump.png")
-	frames = {}
-
-	local frameWidth = 117
-	local frameHeight = 223
+	image = love.graphics.newImage("images/walk.png")
 	local imageWidth = image:getWidth()
 	local imageHeight = image:getHeight()
 
-	for i = 0, 4 do
-		table.insert(frames, love.graphics.newQuad(i * frameWidth, 0, frameWidth, frameHeight, imageWidth, imageHeight))
-	end
+	numTotalFramesPerCycle = 8
 
+	frameWidth = imageWidth / numTotalFramesPerCycle
+	frameHeight = imageHeight / 3
+	walkingUpFrames = {}
+	walkingLeftFrames = {}
+	walkingRightFrames = {}
+	walkingDownFrames = {}
+
+	for i = 0, numTotalFramesPerCycle do
+		table.insert(
+			walkingRightFrames,
+			love.graphics.newQuad(i * frameWidth, 0, frameWidth, frameHeight, imageWidth, imageHeight)
+		)
+	end
+	for i = 0, numTotalFramesPerCycle do
+		table.insert(
+			walkingDownFrames,
+			love.graphics.newQuad(i * frameWidth, frameHeight, frameWidth, frameHeight, imageWidth, imageHeight)
+		)
+	end
+	for i = 0, numTotalFramesPerCycle do
+		table.insert(
+			walkingUpFrames,
+			love.graphics.newQuad(i * frameWidth, frameHeight * 2, frameWidth, frameHeight, imageWidth, imageHeight)
+		)
+	end
 	currFrame = 1
-	goingUp = true
 end
 
 function love.update(dt)
-	if currFrame > 5 then
-		goingUp = false
-		currFrame = 5
-	end
+	animate(dt)
+end
 
-	if goingUp and currFrame <= 5 then
-		currFrame = currFrame + 5 * dt
-	elseif not goingUp and currFrame > 1 then
-		currFrame = currFrame - 5 * dt
-	end
-
-	if currFrame < 1 then
-		goingUp = true
+function love.draw()
+	frame = math.floor(currFrame)
+	if love.keyboard.isDown("right") then
+		love.graphics.draw(image, walkingRightFrames[frame], 100, 100)
+	elseif love.keyboard.isDown("left") then
+		love.graphics.draw(image, walkingRightFrames[frame], 100, 100, 0, -1, 1, frameWidth, 0)
+	elseif love.keyboard.isDown("up") then
+		love.graphics.draw(image, walkingUpFrames[frame], 100, 100)
+	elseif love.keyboard.isDown("down") then
+		love.graphics.draw(image, walkingDownFrames[frame], 100, 100)
+	else
+		love.graphics.draw(image, walkingDownFrames[4], 100, 100)
 		currFrame = 1
 	end
 end
 
-function love.draw()
-	local sec = math.floor(currFrame)
-	print(sec)
-	love.graphics.draw(image, frames[sec], 100, 100)
+function animate(dt)
+	if currFrame > numTotalFramesPerCycle then
+		currFrame = 1
+	end
+	currFrame = currFrame + 10 * dt
 end
