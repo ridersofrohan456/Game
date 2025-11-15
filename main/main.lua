@@ -1,44 +1,33 @@
 function love.load()
-	circle = {}
+	frames = {}
+	for i = 1, 5 do
+		table.insert(frames, love.graphics.newImage("images/jump" .. i .. ".png"))
+	end
 
-	circle.x = 100
-	circle.y = 100
-	circle.radius = 25
-	circle.speed = 200
+	currFrame = 1
+	goingUp = true
 end
 
 function love.update(dt)
-	mouse_x, mouse_y = love.mouse.getPosition()
+	if currFrame > 5 then
+		goingUp = false
+		currFrame = 5
+	end
 
-	angle = math.atan2(mouse_y - circle.y, mouse_x - circle.x)
+	if goingUp and currFrame <= 5 then
+		currFrame = currFrame + 5 * dt
+	elseif not goingUp and currFrame > 1 then
+		currFrame = currFrame - 5 * dt
+	end
 
-	cos = math.cos(angle)
-	sin = math.sin(angle)
-
-	dist = distance(mouse_x, mouse_y, circle.x, circle.y)
-
-	if dist < 400 then
-		circle.x = circle.x + circle.speed * cos * (dist / 100) * dt
-		circle.y = circle.y + circle.speed * sin * (dist / 100) * dt
+	if currFrame < 1 then
+		goingUp = true
+		currFrame = 1
 	end
 end
 
 function love.draw()
-	love.graphics.circle("line", circle.x, circle.y, circle.radius)
-
-	love.graphics.print("angle: " .. angle, 10, 10)
-	love.graphics.print("distance: " .. dist, 10, 20)
-
-	love.graphics.line(circle.x, circle.y, mouse_x, circle.y)
-	love.graphics.line(circle.x, circle.y, circle.x, mouse_y)
-
-	love.graphics.line(circle.x, circle.y, mouse_x, mouse_y)
-end
-
-function distance(x1, y1, x2, y2)
-	local horizontal_distance = x1 - x2
-	local vertical_distance = y1 - y2
-
-	local distance = math.sqrt(horizontal_distance ^ 2 + vertical_distance ^ 2)
-	return distance
+	local frameNum = math.floor(currFrame)
+	print(frameNum)
+	love.graphics.draw(frames[frameNum])
 end
