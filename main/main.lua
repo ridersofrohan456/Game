@@ -1,7 +1,14 @@
 function love.load()
+	image = love.graphics.newImage("images/jump.png")
 	frames = {}
-	for i = 1, 5 do
-		table.insert(frames, love.graphics.newImage("images/jump" .. i .. ".png"))
+
+	local frameWidth = 117
+	local frameHeight = 223
+	local imageWidth = image:getWidth()
+	local imageHeight = image:getHeight()
+
+	for i = 0, 4 do
+		table.insert(frames, love.graphics.newQuad(i * frameWidth, 0, frameWidth, frameHeight, imageWidth, imageHeight))
 	end
 
 	currFrame = 1
@@ -27,7 +34,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	local frameNum = math.floor(currFrame)
-	print(frameNum)
-	love.graphics.draw(frames[frameNum])
+	local sec = math.floor(currFrame)
+	print(sec)
+	love.graphics.draw(image, frames[sec], 100, 100)
 end
