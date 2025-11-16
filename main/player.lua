@@ -21,6 +21,7 @@ function Player:new()
 	loadQuads(self)
 
 	currFrame = 1
+	facingDirection = "down"
 end
 
 function Player:update(dt)
@@ -34,19 +35,22 @@ function Player:update(dt)
 	-- position updates --
 	if love.keyboard.isDown("up") then
 		self.y = self.y - self.speed * dt
+		facingDirection = "up"
 	elseif love.keyboard.isDown("down") then
 		self.y = self.y + self.speed * dt
+		facingDirection = "down"
 	elseif love.keyboard.isDown("left") then
 		self.x = self.x - self.speed * dt
+		facingDirection = "left"
 	elseif love.keyboard.isDown("right") then
 		self.x = self.x + self.speed * dt
+		facingDirection = "right"
 	end
 end
 
 function Player:draw()
 	local frame = math.floor(currFrame)
 	local scaling = 2
-
 	if love.keyboard.isDown("up") then
 		love.graphics.draw(image, self.frames["up"][frame], self.x, self.y, 0, scaling, scaling)
 	elseif love.keyboard.isDown("down") then
@@ -56,7 +60,11 @@ function Player:draw()
 	elseif love.keyboard.isDown("left") then
 		love.graphics.draw(image, self.frames["right"][frame], self.x, self.y, 0, -scaling, scaling, frameWidth, 0) -- flip right image
 	else
-		love.graphics.draw(image, self.frames["down"][1], self.x, self.y, 0, scaling, scaling)
+		if facingDirection == "left" then
+			love.graphics.draw(image, self.frames["right"][frame], self.x, self.y, 0, -scaling, scaling, frameWidth, 0) -- flip right image
+		else
+			love.graphics.draw(image, self.frames[facingDirection][1], self.x, self.y, 0, scaling, scaling)
+		end
 		currFrame = 1
 	end
 end
